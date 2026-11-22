@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RespiraCare Immersive Learning</title>
+<style>
+:root{--navy:#10243a;--blue:#1677c8;--cyan:#dff4fa;--bg:#f3f7fb;--ink:#203247;--muted:#61758a;--green:#168568;--red:#b54747}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(120deg,#10243a,#176c9e);color:white;padding:24px max(20px,calc((100% - 1120px)/2))}
+header h1{margin:0;font-size:clamp(24px,4vw,36px)}header p{margin:8px 0 0;color:#d9edf8;max-width:760px;line-height:1.5}
+main{max-width:1120px;margin:22px auto;padding:0 16px 40px}.notice{background:#fff8e8;border-left:4px solid #e3a52c;padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:16px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.tab,button{border:0;border-radius:10px;padding:11px 15px;font-weight:650;cursor:pointer}.tab{background:white;color:var(--ink);border:1px solid #dbe5ee}.tab.active,button.primary{background:var(--blue);color:white}.tab:hover,button:hover{filter:brightness(.97)}
+.panel{display:none}.panel.active{display:block}.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.card{background:white;border:1px solid #e0e8ef;border-radius:16px;padding:18px;box-shadow:0 5px 18px #193b5810}.card h2,.card h3{margin:0 0 10px}.muted{color:var(--muted);font-size:14px;line-height:1.55}.visual{height:360px;border-radius:13px;background:radial-gradient(circle at 50% 40%,#eaf8ff,#dceaf5 65%,#c8dbe9);overflow:hidden;position:relative}canvas{display:block;width:100%;height:100%}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button{background:#eaf2f8;color:#16496c}button:disabled{opacity:.45;cursor:not-allowed}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.pill{background:#eaf5fb;color:#14577e;border-radius:99px;padding:6px 10px;font-size:12px;font-weight:700}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px}select,input,textarea{width:100%;border:1px solid #cbd8e4;border-radius:9px;padding:10px;font:inherit;background:white}textarea{min-height:84px;resize:vertical}
+.answer{background:#f0f7fb;border-radius:12px;padding:13px;margin-top:12px;line-height:1.55;white-space:pre-wrap}.step{border-left:3px solid #9dc9e3;padding:4px 0 8px 12px;margin:8px 0}.step strong{display:block}.quizopt{display:block;width:100%;text-align:left;margin:7px 0;background:#f2f6fa;border:1px solid #dce6ee}.correct{border-color:#168568!important;background:#e8f7f1!important}.wrong{border-color:#b54747!important;background:#fff0f0!important}
+footer{text-align:center;color:#6c7f90;font-size:12px;margin:24px 0 0}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.visual{height:300px}}
+</style>
+</head>
+<body>
+<header><h1>RespiraCare Immersive Learning</h1><p>Media belajar interaktif Airway, Oksigenasi, dan Suction untuk mahasiswa keperawatan — eksplorasi 3D, simulasi klinis, dan tutor AI.</p></header>
+<main>
+<div class="notice"><b>Catatan keselamatan:</b> Prototipe ini untuk pembelajaran, bukan panduan tindakan mandiri atau pengganti SOP, supervisi klinis, dan penilaian tenaga kesehatan. Parameter dan keputusan klinis harus disesuaikan dengan kondisi pasien serta kebijakan fasilitas.</div>
+<nav>
+<button class="tab active" data-tab="explore">AR • Anatomi 3D</button>
+<button class="tab" data-tab="scenario">VR • Simulasi ICU</button>
+<button class="tab" data-tab="tutor">GenAI • AI Tutor</button>
+<button class="tab" data-tab="quiz">Clinical Challenge</button>
+</nav>
+<section id="explore" class="panel active">
+<div class="grid">
+<div class="card"><h2>Explore Respiratory Anatomy</h2><p class="muted">Putar dan amati model konseptual saluran napas. Pada perangkat yang mendukung WebXR, tekan “Mulai AR” untuk mencoba menempatkan visualisasi di ruang nyata. AR memerlukan HTTPS dan izin kamera/perangkat.</p>
+<div class="visual" id="anatomy"><canvas id="anatomyCanvas"></canvas></div>
+<div class="controls"><button class="primary" id="arBtn">Mulai AR</button><button id="rotateBtn">Putar model</button><button id="resetBtn">Reset tampilan</button></div>
+<div class="pills"><span class="pill">Trakea</span><span class="pill">Bronkus</span><span class="pill">Paru kanan & kiri</span><span class="pill">Alveoli</span></div>
+</div>
+<div class="card"><h3>Fokus observasi</h3>
+<div class="step"><strong>1. Trakea</strong><span class="muted">Jalur konduksi udara dari laring menuju bronkus.</span></div>
+<div class="step"><strong>2. Bronkus dan bronkiolus</strong><span class="muted">Percabangan saluran udara menuju unit pertukaran gas.</span></div>
+<div class="step"><strong>3. Alveoli</strong><span class="muted">Tempat difusi O₂ ke darah dan CO₂ ke alveoli melalui membran alveolo-kapiler.</span></div>
+<div class="step"><strong>4. Hubungkan dengan klinik</strong><span class="muted">Obstruksi, sekret, atau gangguan ventilasi-perfusi dapat mengganggu oksigenasi.</span></div>
+<label for="anatomyQ">Pertanyaan refleksi</label><select id="anatomyQ"><option value="alveoli">Mengapa alveoli penting dalam oksigenasi?</option><option value="airway">Apa dampak obstruksi jalan napas?</option><option value="suction">Mengapa suction bukan tindakan rutin tanpa indikasi?</option></select>
+<button class="primary" id="reflectBtn">Lihat penjelasan</button><div id="reflectAnswer" class="answer" aria-live="polite">Pilih pertanyaan lalu tekan tombol.</div>
+</div></div>
+</section>
+<section id="scenario" class="panel">
+<div class="grid">
+<div class="card"><h2>ICU: Pasien dengan sekret dan desaturasi</h2><p class="muted">Mode simulasi VR konseptual. Jalankan skenario pada layar, atau gunakan headset yang mendukung WebXR untuk memasuki ruang 3D sederhana.</p>
+<div class="visual" id="vrView"><canvas id="vrCanvas"></canvas></div>
+<div class="controls"><button class="primary" id="vrBtn">Masuk VR</button><button id="nextStep">Langkah berikutnya</button><button id="restartScenario">Ulangi skenario</button></div></div>
+<div class="card"><h3>Briefing pasien</h3><div class="pills"><span class="pill">Simulasi pendidikan</span><span class="pill">Dewasa</span><span class="pill">Monitoring tersedia</span></div>
+<p><b>Situasi:</b> Pasien di ICU tampak gelisah, terdengar suara sekret, frekuensi napas meningkat, dan SpO₂ menurun dari nilai awal.</p>
+<div id="scenarioText" class="answer">Tahap 1 — Lakukan penilaian awal: keamanan, respons pasien, patensi jalan napas, pola napas, usaha napas, dan data monitor. Panggil bantuan sesuai kondisi dan protokol.</div>
+<p class="muted" id="scenarioProgress">Tahap 1 dari 5</p>
+</div></div>
+</section>
+<section id="tutor" class="panel">
+<div class="grid">
+<div class="card"><h2>AI Tutor — Critical Care Assistant</h2><p class="muted">Ajukan pertanyaan tentang airway, oksigenasi, atau suction. Prototipe memberi respons edukatif berbasis skenario dan prinsip umum. Tombol “Diskusikan dengan ChatGPT” membuka percakapan eksternal dengan konteks pertanyaan.</p>
+<label for="topic">Topik</label><select id="topic"><option>Airway assessment</option><option>Oxygenation</option><option>Indikasi dan prinsip suction</option><option>Evaluasi setelah tindakan</option><option>Prioritas pada pasien desaturasi</option></select>
+<label for="question">Pertanyaan mahasiswa</label><textarea id="question" placeholder="Contoh: Apa yang harus dikaji sebelum suction?"></textarea>
+<div class="controls"><button class="primary" id="askBtn">Tanya AI Tutor</button><button id="chatgptBtn">Diskusikan dengan ChatGPT</button></div>
+<div id="tutorAnswer" class="answer" aria-live="polite">Jawaban tutor akan muncul di sini.</div></div>
+<div class="card"><h3>Contoh prompt AI</h3><div class="answer">“Anda adalah tutor keperawatan kritis. Jelaskan prinsip penilaian jalan napas dan oksigenasi kepada mahasiswa. Berikan alasan klinis, tanda bahaya, dan pertanyaan reflektif. Jangan memberikan instruksi yang menggantikan SOP atau supervisi klinis.”</div>
+<h3 style="margin-top:18px">Batasan prototipe</h3><p class="muted">Respons otomatis di halaman ini adalah demonstrasi berbasis aturan/knowledge snippets, bukan model bahasa yang berjalan di server. Integrasi GenAI penuh memerlukan API resmi, autentikasi, kebijakan privasi, dan pengamanan keluaran. Tautan ChatGPT memungkinkan eksplorasi generatif eksternal.</p></div>
+</div>
+</section>
+<section id="quiz" class="panel">
+<div class="card"><h2>Clinical Challenge</h2><p class="muted">Pilih jawaban terbaik berdasarkan prinsip pengkajian dan keselamatan pasien. Umpan balik ditampilkan setelah memilih.</p>
+<div id="quizArea"></div><div class="controls"><button class="primary" id="nextQuiz">Soal berikutnya</button><button id="resetQuiz">Ulangi kuis</button></div><div id="score" class="answer">Skor: 0 dari 0 dijawab.</div></div>
+</section>
+<footer>RespiraCare Immersive Learning • Prototipe akademik • Versi 1.0</footer>
+</main>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const tabs=document.querySelectorAll('.tab');tabs.forEach(b=>b.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active');}));
+function makeScene(canvasId, mode='anatomy'){
+ const canvas=document.getElementById(canvasId), renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(canvas.clientWidth,canvas.clientHeight,false);
+ const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(38,canvas.clientWidth/canvas.clientHeight,.1,100);camera.position.set(0,0,8);
+ scene.add(new THREE.HemisphereLight(0xffffff,0x7890a5,2));const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(4,6,7);scene.add(light);
+ const root=new THREE.Group();scene.add(root);
+ const mat=(color)=>new THREE.MeshStandardMaterial({color,roughness:.55,metalness:.02});
+ function tube(points,r,color){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,32,r,10,false),mat(color));root.add(mesh);return mesh;}
+ function blob(x,y,z,sx,sy,sz,color){const m=new THREE.Mesh(new THREE.SphereGeometry(1,32,24),mat(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);root.add(m);return m;}
+ if(mode==='anatomy'){
+  tube([[0,2.7,0],[0,1.8,0],[0,1.1,0]],.18,0x5d9eb7);
+  tube([[0,1.1,0],[-.55,.55,0],[-1.0,.1,0],[-1.15,-.7,0]],.13,0x4c91aa);
+  tube([[0,1.1,0],[.55,.55,0],[1.0,.1,0],[1.15,-.7,0]],.13,0x4c91aa);
+  blob(-1.05,-.2,0,.82,1.55,.48,0xe98f9b);blob(1.05,-.2,0,.82,1.55,.48,0xe98f9b);
+  // bronchioles
+  for(let s of [-1,1]) for(let i=0;i<4;i++) tube([[s*.55,.55,0],[s*(.8+i*.12),.05-i*.22,.02],[s*(.95+i*.14),-.55-i*.16,.02]],.035,0xb85f72);
+  for(let i=0;i<8;i++){let a=i*Math.PI/4;blob(Math.cos(a)*.28,2.45+Math.sin(a)*.2,.05,.09,.09,.09,0xf2bd54)}
+ }else{
+  // simple ICU bed, patient silhouette, monitor
+  const bed= new THREE.Mesh(new THREE.BoxGeometry(4.6,.18,1.8),mat(0x8aa6b9));bed.position.set(0,-1.3,0);root.add(bed);
+  blob(0,-.8,0,.72,.62,.38,0xe5a18c);blob(-1.25,-.7,0,.36,.36,.36,0xe5a18c);
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(.12,2.6,.12),mat(0x6b879b));frame.position.set(-2.25,-.1,0);root.add(frame);
+  const mon=new THREE.Mesh(new THREE.BoxGeometry(1.35,1.1,.18),mat(0x183d54));mon.position.set(2,1,0);root.add(mon);
+  const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(1.4,1,0.15),new THREE.Vector3(1.65,1,0.15),new THREE.Vector3(1.78,1.35,.15),new THREE.Vector3(1.95,.7,.15),new THREE.Vector3(2.12,1,.15),new THREE.Vector3(2.55,1,.15)]),new THREE.LineBasicMaterial({color:0x45e3a4}));root.add(line);
+  tube([[-.2,-.45,.2],[-.1,.15,.2],[.3,.55,.2],[.6,.65,.2]],.06,0x4b9db7);
+ }
+ let dragging=false,px=0;canvas.addEventListener('pointerdown',e=>{dragging=true;px=e.clientX;canvas.setPointerCapture(e.pointerId)});canvas.addEventListener('pointerup',()=>dragging=false);canvas.addEventListener('pointermove',e=>{if(dragging){root.rotation.y+=(e.clientX-px)*.008;px=e.clientX}});
+ function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+ new ResizeObserver(resize).observe(canvas);
+ renderer.setAnimationLoop(()=>renderer.render(scene,camera));
+ return {renderer,scene,camera,root};
+}
+const anatomy=makeScene('anatomyCanvas'),vr=makeScene('vrCanvas','vr');
+let rot=true;document.getElementById('rotateBtn').onclick=()=>{rot=!rot; if(rot){const tick=()=>{if(rot)anatomy.root.rotation.y+=.004;requestAnimationFrame(tick)};tick()}};
+document.getElementById('resetBtn').onclick=()=>{anatomy.root.rotation.set(0,0,0)};
+(function tick(){if(rot)anatomy.root.rotation.y+=.002;requestAnimationFrame(tick)})();
+document.getElementById('arBtn').onclick=async()=>{try{if(!navigator.xr||!await navigator.xr.isSessionSupported('immersive-ar'))throw Error('Perangkat/browser ini belum mendukung WebXR AR. Gunakan Chrome Android yang kompatibel, HTTPS, dan izin kamera. Anda tetap dapat memutar model 3D pada layar.');const session=await navigator.xr.requestSession('immersive-ar',{optionalFeatures:['local-floor','dom-overlay'],domOverlay:{root:document.body}});anatomy.renderer.xr.enabled=true;await anatomy.renderer.xr.setSession(session);document.getElementById('arBtn').textContent='AR aktif — keluar melalui kontrol browser';session.addEventListener('end',()=>document.getElementById('arBtn').textContent='Mulai AR');}catch(e){alert(e.message)}};
+const stages=[
+' Tahap 1 — Lakukan penilaian awal: keamanan, respons pasien, patensi jalan napas, pola napas, usaha napas, dan data monitor. Panggil bantuan sesuai kondisi dan protokol.',
+'Tahap 2 — Identifikasi masalah prioritas. Dengarkan suara napas, amati gerakan dada, nilai kemampuan batuk, karakter sekret, tren SpO₂, dan tanda kelelahan. Jangan menilai oksigenasi dari satu angka saja.',
+'Tahap 3 — Lakukan intervensi sesuai indikasi dan kewenangan: optimalkan posisi, pastikan perangkat oksigen terpasang benar, evaluasi sumber dan aliran sesuai instruksi, serta kolaborasikan eskalasi bantuan.',
+'Tahap 4 — Pertimbangkan suction hanya bila terdapat indikasi klinis, misalnya sekret yang mengganggu patensi jalan napas/ventilasi atau batuk tidak efektif. Jelaskan prosedur, siapkan alat, monitor kondisi, dan ikuti SOP serta supervisi.',
+'Tahap 5 — Evaluasi respons: patensi jalan napas, pola dan usaha napas, suara napas, SpO₂/tren monitor, toleransi pasien, serta dokumentasikan tindakan dan respons. Eskalasi bila kondisi tidak membaik.'
+];let stage=0;function showStage(){document.getElementById('scenarioText').textContent=stages[stage];document.getElementById('scenarioProgress').textContent=`Tahap ${stage+1} dari ${stages.length}`}document.getElementById('nextStep').onclick=()=>{stage=Math.min(stage+1,stages.length-1);showStage()};document.getElementById('restartScenario').onclick=()=>{stage=0;showStage()};
+document.getElementById('vrBtn').onclick=async()=>{try{if(!navigator.xr||!await navigator.xr.isSessionSupported('immersive-vr'))throw Error('Headset/browser belum mendukung WebXR VR. Simulasi 3D tetap dapat digunakan pada layar dan diputar dengan mouse/sentuhan.');const s=await navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor']});vr.renderer.xr.enabled=true;await vr.renderer.xr.setSession(s)}catch(e){alert(e.message)}};
+const responses=[
+{keys:['suction','hisap','sekret'],text:'Suction dipertimbangkan bila ada indikasi klinis seperti sekret yang mengganggu patensi jalan napas/ventilasi atau batuk tidak efektif. Kaji pasien terlebih dahulu, pantau respons, gunakan teknik aseptik sesuai SOP, batasi durasi sesuai protokol, dan evaluasi setelah tindakan. Hindari suction rutin tanpa indikasi.'},
+{keys:['oksigen','spo2','saturasi','oxygen'],text:'Nilai pasien secara menyeluruh: patensi jalan napas, frekuensi dan usaha napas, warna kulit/mukosa, kesadaran, suara napas, tren SpO₂, serta keandalan sensor. Berikan/atur terapi oksigen sesuai instruksi, target klinis, kompetensi, dan protokol; eskalasi bila ada tanda gagal napas.'},
+{keys:['airway','jalan napas','obstruksi'],text:'Pengkajian airway meliputi kemampuan berbicara, suara napas abnormal (misalnya stridor/gurgling), sekret atau benda asing, gerakan udara, dan tingkat kesadaran. Tanda obstruksi berat atau penurunan kesadaran memerlukan bantuan segera dan tindakan sesuai algoritme serta kewenangan.'},
+{keys:['evaluasi','setelah'],text:'Evaluasi ulang patensi jalan napas, suara napas, pola/usaha napas, SpO₂ dan trennya, hemodinamik bila relevan, kenyamanan/toleransi pasien, serta karakter sekret. Dokumentasikan indikasi, tindakan, respons, dan kebutuhan tindak lanjut.'}
+];
+document.getElementById('askBtn').onclick=()=>{const q=document.getElementById('question').value.trim(),topic=document.getElementById('topic').value;if(!q){alert('Tuliskan pertanyaan terlebih dahulu.');return}const lower=(topic+' '+q).toLowerCase();let hit=responses.find(r=>r.keys.some(k=>lower.includes(k)));let answer=hit?hit.text:'Mulailah dari pengkajian sistematis ABC, identifikasi masalah yang mengancam nyawa, gunakan data klinis dan tren, tentukan prioritas, lakukan tindakan sesuai kewenangan/SOP, lalu evaluasi respons. Untuk memperdalam, jelaskan konteks pasien dan data objektif yang tersedia.';document.getElementById('tutorAnswer').textContent=answer+'\\n\\nPertanyaan reflektif: data apa yang paling mendukung keputusan Anda, dan kapan Anda harus melakukan eskalasi?';};
+document.getElementById('chatgptBtn').onclick=()=>{const q=document.getElementById('question').value||'Bantu saya belajar airway, oksigenasi, dan suction pada pasien kritis.';const prompt='Anda adalah tutor keperawatan kritis. Bimbing mahasiswa dengan pertanyaan Socratic dan umpan balik berbasis bukti tentang '+document.getElementById('topic').value+'. Pertanyaan: '+q+'. Sertakan rasional, keselamatan pasien, tanda bahaya, dan pengingat untuk mengikuti SOP serta supervisi klinis. Jangan mengarang pedoman atau menggantikan keputusan klinis.';window.open('https://chatgpt.com/?q='+encodeURIComponent(prompt),'_blank','noopener')};
+const qs=[
+{q:'Pasien menunjukkan suara gurgling dan sekret tampak di jalan napas. Apa prioritas awal?',o:['Mengabaikan bila SpO₂ belum turun','Menilai patensi jalan napas dan kondisi pasien, panggil bantuan sesuai kebutuhan','Langsung melakukan suction tanpa pengkajian','Memberi minum agar sekret encer'],a:1,e:'Suara gurgling dapat menunjukkan sekret/cairan di jalan napas. Prioritaskan pengkajian airway dan respons cepat sesuai protokol.'},
+{q:'Pernyataan paling tepat tentang suction adalah…',o:['Dilakukan rutin pada semua pasien ICU','Dilakukan hanya berdasarkan jadwal','Dipertimbangkan berdasarkan indikasi klinis dan diikuti evaluasi respons','Tidak memerlukan pemantauan'],a:2,e:'Suction bukan tindakan rutin tanpa indikasi. Pengkajian, pemantauan, teknik yang tepat, dan evaluasi penting untuk keselamatan.'},
+{q:'Mengapa tren SpO₂ lebih bermakna daripada satu angka tunggal?',o:['Karena tren membantu melihat perubahan kondisi dan respons intervensi','Karena SpO₂ selalu akurat tanpa artefak','Karena SpO₂ menggantikan seluruh pengkajian','Karena tren tidak dipengaruhi perfusi atau gerakan'],a:0,e:'Tren membantu menilai perubahan, tetapi tetap harus ditafsirkan bersama kondisi klinis dan kualitas sinyal sensor.'},
+{q:'Setelah intervensi jalan napas, tindakan berikutnya yang penting adalah…',o:['Mengakhiri pemantauan','Mengevaluasi patensi, pola napas, SpO₂, toleransi, dan mendokumentasikan respons','Mengulang tindakan tanpa pengkajian','Menganggap masalah pasti selesai'],a:1,e:'Evaluasi ulang memastikan respons dan mendeteksi komplikasi atau kebutuhan eskalasi.'}
+];let qi=0,answered=0,score=0;const chosen={};function renderQuiz(){const q=qs[qi],area=document.getElementById('quizArea');area.innerHTML=`<h3>Soal ${qi+1} dari ${qs.length}</h3><p>${q.q}</p>`+q.o.map((x,i)=>`<button class="quizopt" data-i="${i}">${String.fromCharCode(65+i)}. ${x}</button>`).join('')+`<div id="quizFeedback" class="answer">Pilih satu jawaban.</div>`;area.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(chosen[qi]!==undefined)return;const i=+b.dataset.i;chosen[qi]=i;answered++;if(i===q.a)score++;area.querySelectorAll('button').forEach((x,j)=>{if(j===q.a)x.classList.add('correct');else if(j===i)x.classList.add('wrong');x.disabled=true});document.getElementById('quizFeedback').textContent=(i===q.a?'Tepat. ':'Belum tepat. ')+q.e;document.getElementById('score').textContent=`Skor: ${score} dari ${answered} dijawab.`})}document.getElementById('nextQuiz').onclick=()=>{qi=(qi+1)%qs.length;renderQuiz()};document.getElementById('resetQuiz').onclick=()=>{qi=0;answered=0;score=0;Object.keys(chosen).forEach(k=>delete chosen[k]);document.getElementById('score').textContent='Skor: 0 dari 0 dijawab.';renderQuiz()};renderQuiz();
+document.getElementById('reflectBtn').onclick=()=>{const v=document.getElementById('anatomyQ').value;const a={alveoli:'Alveoli menyediakan permukaan luas dan membran tipis untuk difusi gas. Kerusakan, cairan, atau kolaps alveoli dapat menghambat pertukaran gas.',airway:'Obstruksi meningkatkan resistensi aliran udara dan dapat mengurangi ventilasi alveoli. Kenali tanda gangguan airway dan lakukan eskalasi sesuai protokol.',suction:'Suction dapat menimbulkan trauma mukosa, hipoksemia, dan perubahan hemodinamik. Karena itu tindakan harus berdasarkan indikasi, dilakukan dengan teknik dan pemantauan yang tepat.'};document.getElementById('reflectAnswer').textContent=a[v]};
+</script>
+</body></html>
